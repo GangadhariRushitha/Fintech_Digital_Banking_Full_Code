@@ -4,11 +4,12 @@ import com.example.FinTech_Digital_Banking.Entity.Account;
 import com.example.FinTech_Digital_Banking.Repository.AccountRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-//import com.example.FinTech_Digital_Banking.Security.CustomUserDetailsService;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
+@PreAuthorize("hasRole('USER')")
 @RequestMapping("/api")
 public class AccountController {
 
@@ -19,12 +20,22 @@ public class AccountController {
     }
 
     // List all accounts (for frontend)
+ 
     @GetMapping("/accounts")
     public ResponseEntity<List<Account>> listAccounts() {
         return ResponseEntity.ok(accountRepository.findAll());
     }
   
+    
+    @GetMapping("/{accountId}/balance")
+    public BigDecimal getBlance(@PathVariable Long accountId)
+    {
+        Account account=accountRepository.findById(accountId)
+                .orElseThrow(()-> new RuntimeException("Accountnot found"));
+        return account.getBalance();
+    }
     // Create an account (for testing)
+    
     @PostMapping("/accounts")
     public ResponseEntity<Account> createAccount(@RequestBody CreateAccountDto dto) {
 

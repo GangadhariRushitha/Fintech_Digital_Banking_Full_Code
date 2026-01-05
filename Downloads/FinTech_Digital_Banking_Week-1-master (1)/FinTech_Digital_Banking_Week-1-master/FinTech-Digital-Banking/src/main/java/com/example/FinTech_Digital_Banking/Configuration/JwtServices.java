@@ -1,4 +1,3 @@
-
 package com.example.FinTech_Digital_Banking.Configuration;
 
 import io.jsonwebtoken.*;

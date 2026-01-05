@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 
 
 @Entity
-@Table(name = "account1")
+@Table(name = "account")
 @Getter
 @Setter
 @NoArgsConstructor

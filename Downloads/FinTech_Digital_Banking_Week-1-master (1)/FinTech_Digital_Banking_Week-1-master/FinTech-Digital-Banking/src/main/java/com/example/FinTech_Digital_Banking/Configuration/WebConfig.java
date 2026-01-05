@@ -16,9 +16,11 @@ public class WebConfig {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000", "http://localhost:3001") // your React ports
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("Authorization", "Content-Type", "Accept")
+                        .allowedHeaders("*")
                         .allowCredentials(true); // optional if you use cookies
             }
+            
         };
     }
+   
 }

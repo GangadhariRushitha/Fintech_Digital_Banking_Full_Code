@@ -18,6 +18,7 @@ public class TransferService {
 
     private final AccountRepository accountRepository;
     private final LedgerEntryRepository ledgerEntryRepository;
+  
 
     public TransferService(AccountRepository accountRepository,
                            LedgerEntryRepository ledgerEntryRepository) {
@@ -25,11 +26,7 @@ public class TransferService {
         this.ledgerEntryRepository = ledgerEntryRepository;
     }
 
-    /**
-     * Performs a single transfer with double-entry ledger.
-     * Uses SERIALIZABLE isolation and relies on findByIdForUpdate (pessimistic lock)
-     * to prevent race conditions under concurrency.
-     */
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public UUID transfer(TransferRequest req, Long performedByUserId) {
         if (req.getAmount() == null || req.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
@@ -54,7 +51,6 @@ public class TransferService {
         if (!fromAccount.getCurrency().equalsIgnoreCase(toAccount.getCurrency())) {
             throw new IllegalArgumentException("Currency mismatch");
         }
-
         BigDecimal amount = req.getAmount();
         if (fromAccount.getBalance().compareTo(amount) < 0) {
             throw new IllegalStateException("Insufficient funds");
@@ -98,3 +94,6 @@ public class TransferService {
         return transactionId;
     }
 }
+
+
+

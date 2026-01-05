@@ -107,6 +107,107 @@ public BigDecimal getBalance(Long accountId)
             .orElseThrow(()-> new IllegalArgumentException("Account not found"))
             .getBalance();
 }
+@Transactional(isolation = Isolation.SERIALIZABLE)
+public void debit(Long accountId, double amount) {
 
+    if (amount <= 0) {
+        throw new IllegalArgumentException("Amount must be > 0");
+    }
+
+    Account account = accountRepository.findByIdForUpdate(accountId)
+            .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+    System.out.print("account id" +accountId);
+    System.out.print(account.getAccountId());
+    System.out.print(account.getBalance());
+    System.out.print(amount);
+            
+
+    BigDecimal debitAmount = BigDecimal.valueOf(amount);
+
+    if (account.getBalance().compareTo(debitAmount) < 0) {
+        throw new IllegalStateException("Insufficient balance");
+    }
+
+    UUID transactionId = UUID.randomUUID();
+
+    // DEBIT user account
+    LedgerEntry debit = LedgerEntry.builder()
+            .transactionId(transactionId)
+            .entryTimestamp(OffsetDateTime.now())
+            .accountId(accountId)
+            .entryType("DEBIT")
+            .amount(debitAmount)
+            .currency(account.getCurrency())
+            .description("STOCK_BUY")
+            .createdBy(accountId)
+            .build();
+
+    // CREDIT system / broker account
+    LedgerEntry credit = LedgerEntry.builder()
+            .transactionId(transactionId)
+            .entryTimestamp(OffsetDateTime.now())
+            .accountId(0L) // SYSTEM / BROKER ACCOUNT
+            .relatedAccountId(accountId)
+            .entryType("CREDIT")
+            .amount(debitAmount)
+            .currency(account.getCurrency())
+            .description("STOCK_BUY")
+            .createdBy(accountId)
+            .build();
+
+    ledgerEntryRepository.save(debit);
+    ledgerEntryRepository.save(credit);
+
+    // Update balance
+    account.setBalance(account.getBalance().subtract(debitAmount));
+    accountRepository.save(account);
+}
+
+@Transactional(isolation = Isolation.SERIALIZABLE)
+public void credit(Long accountId, double amount) {
+
+    if (amount <= 0) {
+        throw new IllegalArgumentException("Amount must be > 0");
+    }
+
+    Account account = accountRepository.findByIdForUpdate(accountId)
+            .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+
+    BigDecimal creditAmount = BigDecimal.valueOf(amount);
+
+    UUID transactionId = UUID.randomUUID();
+
+    // CREDIT user account
+    LedgerEntry credit = LedgerEntry.builder()
+            .transactionId(transactionId)
+            .entryTimestamp(OffsetDateTime.now())
+            .accountId(accountId)
+            .entryType("CREDIT")
+            .amount(creditAmount)
+            .currency(account.getCurrency())
+            .description("STOCK_SELL")
+            .createdBy(accountId)
+            .build();
+
+    // DEBIT system / broker account
+    LedgerEntry debit = LedgerEntry.builder()
+            .transactionId(transactionId)
+            .entryTimestamp(OffsetDateTime.now())
+            .accountId(0L) // SYSTEM / BROKER
+            .relatedAccountId(accountId)
+            .entryType("DEBIT")
+            .amount(creditAmount)
+            .currency(account.getCurrency())
+            .description("STOCK_SELL")
+            .createdBy(accountId)
+            .build();
+
+    ledgerEntryRepository.save(debit);
+    ledgerEntryRepository.save(credit);
+
+    // Update balance
+    account.setBalance(account.getBalance().add(creditAmount));
+    accountRepository.save(account);
+}
 
 }
