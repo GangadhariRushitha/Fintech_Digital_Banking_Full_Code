@@ -1,70 +1,162 @@
-# Getting Started with Create React App
+# VaultCore Financial
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+**VaultCore Financial** is a production-grade simulation of a **Neo-Bank core infrastructure**, designed to demonstrate secure, scalable, and compliant financial system design. The project focuses on **account management, money transfers, and simulated stock trading**, with **security and data integrity as the highest priorities**.
 
-In the project directory, you can run:
+A single vulnerability such as **SQL Injection or Cross-Site Scripting (XSS)** in a real-world banking system can lead to severe legal and regulatory consequences. VaultCore Financial is built to reflect these real-world constraints using modern backend, frontend, and security best practices.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Key Objectives
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* Enforce **financial correctness** using a strict double-entry ledger system
+* Guarantee **ACID compliance** and prevent race conditions under high concurrency
+* Simulate **thousands of concurrent users** using Java 21 Virtual Threads
+* Detect and mitigate **fraudulent transactions** in real time
+* Maintain **auditability and regulatory compliance**
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Core Features
 
-### `npm run build`
+### 🔐 Security-First Architecture
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Spring Security with **JWT authentication and refresh tokens**
+* Strict validation against **SQL Injection and XSS attacks**
+* Role-based access control (RBAC)
+* OWASP-compliant secure coding practices
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 📒 Double-Entry Ledger System
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* Immutable ledger entries (no updates or deletes)
+* Every transaction creates **matching debit and credit records**
+* Database-level **check constraints** to prevent balance corruption
+* Fully **ACID-compliant** transactions
 
-### `npm run eject`
+### ⚙️ Transaction Engine
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* Money transfers implemented using `@Transactional(isolation = SERIALIZABLE)`
+* Serialized execution to prevent dirty reads, lost updates, and race conditions
+* Guarantees **non-negative balances**, even under heavy load
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 🧵 High-Concurrency with Virtual Threads
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+* Java 21 **Virtual Threads** used for the `Get Balance` API
+* Simulates thousands of simultaneous requests without performance degradation
+* Designed for high-throughput, low-latency financial workloads
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 🚨 Fraud Detection Middleware
 
-## Learn More
+* Interceptor / AOP-based middleware for transaction monitoring
+* Automatically flags transactions exceeding a configurable threshold
+* Triggers a **mock 2FA challenge** via SMS/Email for suspicious activity
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 📈 Trading & Portfolio Management
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* Integration with a **mock Stock Market API**
+* Simulated stock buy/sell operations
+* React-based **Portfolio Dashboard** with real-time charts using Recharts
+* Optimized to keep stock price update latency under **300ms**
 
-### Code Splitting
+### 🧾 Audit & Compliance
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+* AspectJ-based **audit logging** for every method call
+* Logs input parameters, execution details, and return values
+* Generates **monthly account statements in PDF format**
+* Supports regulatory-style audits and traceability
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Technology Stack
 
-### Making a Progressive Web App
+### Backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* Java 21
+* Spring Boot
+* Spring Security (JWT, Refresh Tokens)
+* Spring Data JPA / Hibernate
+* AspectJ (Audit Logging)
+* RESTful APIs
 
-### Advanced Configuration
+### Frontend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+* React
+* Recharts (Data Visualization)
+* Secure multi-step forms for transactions
 
-### Deployment
+### Database
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+* Relational Database (PostgreSQL / MySQL recommended)
+* Immutable ledger tables
+* Check constraints and transactional isolation
 
-### `npm run build` fails to minify
+### Testing & Security
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* Concurrency testing (100+ parallel threads)
+* OWASP ZAP penetration testing
+* Manual and automated security validation
+
+---
+
+## Week-Wise Implementation Plan
+
+### Week 1 – Security & Ledger Design
+
+* Design immutable ledger database schema
+* Implement database constraints to prevent tampering
+* Configure Spring Security with JWT & Refresh Tokens
+* Build React Login Page
+
+**Validation:**
+
+* Manual attempts to modify ledger rows must fail
+* Balance integrity must remain intact
+
+---
+
+### Week 2 – Transaction Engine
+
+* Implement `TransferService` with SERIALIZABLE isolation
+* Develop multi-step "Send Money" wizard in React
+
+**Validation:**
+
+* Concurrency test with 100 simultaneous withdrawals
+* Final balance must be correct and never negative
+
+---
+
+### Week 3 – Trading & External APIs
+
+* Integrate mock Stock Market REST API
+* Build Portfolio Dashboard with Recharts
+
+**Validation:**
+
+* Stock price update latency under 300ms
+
+---
+
+### Week 4 – Audit & Compliance
+
+* Implement AspectJ-based audit logging
+* Generate monthly PDF statements
+* Perform OWASP ZAP security scan
+
+**Validation:**
+
+* No critical or high-risk vulnerabilities detected
+
+---
+
+## Disclaimer
+
+This project is a **simulation** built for educational and architectural demonstration purposes only. It does **not handle real money or real stock trades**.
+
+---
+
+## Author / Organization
+
+**Zaalima Development Pvt. Ltd**
+Confidential – Internal Use Only
